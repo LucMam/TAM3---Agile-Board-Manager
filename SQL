@@ -1,0 +1,52 @@
+--SQL
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    full_name VARCHAR(150),
+    email VARCHAR(150) UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'TEAM_MEMBER', -- ex: ADMIN, PRODUCT_OWNER, TEAM_MEMBER
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE projects (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    description TEXT,
+    owner_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE epics (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE stories (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    epic_id INTEGER REFERENCES epics(id) ON DELETE CASCADE,
+    assignee_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    status VARCHAR(30) DEFAULT 'To Do', -- To Do, In Progress, Done
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    story_id INTEGER REFERENCES stories(id) ON DELETE CASCADE,
+    assignee_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    status VARCHAR(30) DEFAULT 'To Do', -- To Do, In Progress, Done
+    priority VARCHAR(20) DEFAULT 'Medium', -- Low, Medium, High
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    due_date DATE
+);
